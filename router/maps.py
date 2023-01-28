@@ -4,7 +4,7 @@ sys.path.append("..")
 from fastapi import APIRouter, Depends
 from db import SessionLocal
 from sqlalchemy.orm import Session
-from models import ModelMap, ModelMapTable, ModelMap_, DeleteModelMap, Users
+from models import ModelMap, ModelMapTable, DeleteModelMap
 from typing import List
 from datetime import datetime
 
@@ -19,7 +19,7 @@ def get_db():
         db.close()
 
 
-@router.post("/{model_group}", response_model=List[ModelMap_])
+@router.post("/{model_group}", response_model=List[ModelMap])
 async def getUsers(model_group: str, db: Session = Depends(get_db)):
     try:
         model_data = (
@@ -28,52 +28,49 @@ async def getUsers(model_group: str, db: Session = Depends(get_db)):
             .all()
         )
         data = []
-        for i in range(len(model_data)):
-            data.insert(
-                i,
-                ModelMap_(
+        for i, model in enumerate(model_data):
+            data.append(
+                ModelMap(
+                    model_group=model.model_group,
+                    model_name=model.model_name,
+                    seq=model.seq,
+                    x=model.x,
+                    y=model.y,
+                    z=model.z,
+                    createdate=model.createdate,
+                    createid=model.createid,
+                    updatedate=model.updatedate,
+                    updateid=model.updateid,
                     id=i,
-                    model_group=model_data[i].model_group,
-                    model_name=model_data[i].model_name,
-                    seq=model_data[i].seq,
-                    x=model_data[i].x,
-                    y=model_data[i].y,
-                    z=model_data[i].z,
-                    createdate=model_data[i].createdate,
-                    createid=model_data[i].createid,
-                    updatedate=model_data[i].updatedate,
-                    updateid=model_data[i].updateid,
-                ),
+                )
             )
         return data
     except Exception:
         return "ERROR"
 
 
-@router.get("", response_model=List[ModelMap_])
+@router.get("", response_model=List[ModelMap])
 async def getUsers(db: Session = Depends(get_db)):
     try:
         model_data = (
             db.query(ModelMapTable).filter(ModelMapTable.model_group != "").all()
         )
-
         data = []
-        for i in range(len(model_data)):
-            data.insert(
-                i,
-                ModelMap_(
+        for i, model in enumerate(model_data):
+            data.append(
+                ModelMap(
+                    model_group=model.model_group,
+                    model_name=model.model_name,
+                    seq=model.seq,
+                    x=model.x,
+                    y=model.y,
+                    z=model.z,
+                    createdate=model.createdate,
+                    createid=model.createid,
+                    updatedate=model.updatedate,
+                    updateid=model.updateid,
                     id=i,
-                    model_group=model_data[i].model_group,
-                    model_name=model_data[i].model_name,
-                    seq=model_data[i].seq,
-                    x=model_data[i].x,
-                    y=model_data[i].y,
-                    z=model_data[i].z,
-                    createdate=model_data[i].createdate,
-                    createid=model_data[i].createid,
-                    updatedate=model_data[i].updatedate,
-                    updateid=model_data[i].updateid,
-                ),
+                )
             )
         return data
     except Exception:
@@ -85,8 +82,11 @@ async def update_map(item: ModelMap, db: Session = Depends(get_db)):
     try:
         List = (
             db.query(ModelMapTable)
-            .filter(ModelMapTable.model_group == item.model_group)
-            .filter(ModelMapTable.model_name == item.model_name)
+            .filter(
+                ModelMapTable.model_group == item.model_group,
+                ModelMapTable.model_name == item.model_name,
+                ModelMapTable.seq == item.seq,
+            )
             .first()
         )
         if List is None:
@@ -106,8 +106,19 @@ async def update_map(item: ModelMap, db: Session = Depends(get_db)):
 @router.post("upadd/{modellist}")  # 데이터 인서트
 async def add_map(item: ModelMap, db: Session = Depends(get_db)):
     try:
-        List = f"insert into model_map (model_group,model_name,seq,x,y,z,createdate,createid,updatedate,updateid) values ('{item.model_group}','{item.model_name}','{item.seq}',{item.x},{item.y},{item.z},now(),'{item.createid}',now(),'{item.updateid}')"
-        db.execute(List)
+        L = ModelMapTable(
+            model_group=item.model_group,
+            model_name=item.model_name,
+            seq=item.seq,
+            x=item.x,
+            y=item.y,
+            z=item.z,
+            createdate=datetime.now(),
+            updatedate=datetime.now(),
+            createid=item.createid,
+            updateid=item.updateid,
+        )
+        db.add(L)
         db.commit()
         return f"{item.model_group},{item.model_name} added..."
     except Exception:
@@ -119,9 +130,11 @@ async def add_map(item: DeleteModelMap, db: Session = Depends(get_db)):
     try:
         List = (
             db.query(ModelMapTable)
-            .filter(ModelMapTable.model_group == item.model_group)
-            .filter(ModelMapTable.model_name == item.model_name)
-            .filter(ModelMapTable.seq == item.seq)
+            .filter(
+                ModelMapTable.model_group == item.model_group,
+                ModelMapTable.model_name == item.model_name,
+                ModelMapTable.seq == item.seq,
+            )
             .first()
         )
         if List is None:

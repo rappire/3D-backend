@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, true
 from datetime import date, datetime
 from pydantic import BaseModel
 from db import Base
+from typing import Optional
 
 
 class UserTable(Base):
@@ -93,6 +94,7 @@ class ModelMap(BaseModel):
     createid: str
     updatedate: date
     updateid: str
+    id: Optional[int]
 
 
 class DeleteModelMap(BaseModel):
@@ -153,10 +155,6 @@ class PeripheralsMap(BaseModel):
     createid: str
     updatedate: date
     updateid: str
-
-
-class ModelMap_(ModelMap):
-    id: int
 
 
 class MachineRepairHistoryTable(Base):

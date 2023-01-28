@@ -24,23 +24,21 @@ async def getPeripherals(db: Session = Depends(get_db)):
         Peripherals_data = (
             db.query(PeripheralsTable).filter(PeripheralsTable.code != "").all()
         )
-
         data = []
-        for i in range(len(Peripherals_data)):
-            data.insert(
-                i,
+        for i in Peripherals_data:
+            data.append(
                 PeripheralsMap(
-                    code=Peripherals_data[i].code,
-                    codename=Peripherals_data[i].codename,
-                    manageno=Peripherals_data[i].manageno,
-                    x=Peripherals_data[i].x,
-                    y=Peripherals_data[i].y,
-                    z=Peripherals_data[i].z,
-                    status=Peripherals_data[i].status,
-                    createdate=Peripherals_data[i].createdate,
-                    createid=Peripherals_data[i].createid,
-                    updatedate=Peripherals_data[i].updatedate,
-                    updateid=Peripherals_data[i].updateid,
+                    code=i.code,
+                    codename=i.codename,
+                    manageno=i.manageno,
+                    x=i.x,
+                    y=i.y,
+                    z=i.z,
+                    status=i.status,
+                    createdate=i.createdate,
+                    createid=i.createid,
+                    updatedate=i.updatedate,
+                    updateid=i.updateid,
                 ),
             )
         return data
@@ -54,23 +52,21 @@ async def getPeripheral(code: str, db: Session = Depends(get_db)):
         Peripherals_data = (
             db.query(PeripheralsTable).filter(PeripheralsTable.code == code).all()
         )
-
         data = []
-        for i in range(len(Peripherals_data)):
-            data.insert(
-                i,
+        for i in Peripherals_data:
+            data.append(
                 PeripheralsMap(
-                    code=Peripherals_data[i].code,
-                    codename=Peripherals_data[i].codename,
-                    manageno=Peripherals_data[i].manageno,
-                    x=Peripherals_data[i].x,
-                    y=Peripherals_data[i].y,
-                    z=Peripherals_data[i].z,
-                    status=Peripherals_data[i].status,
-                    createdate=Peripherals_data[i].createdate,
-                    createid=Peripherals_data[i].createid,
-                    updatedate=Peripherals_data[i].updatedate,
-                    updateid=Peripherals_data[i].updateid,
+                    code=i.code,
+                    codename=i.codename,
+                    manageno=i.manageno,
+                    x=i.x,
+                    y=i.y,
+                    z=i.z,
+                    status=i.status,
+                    createdate=i.createdate,
+                    createid=i.createid,
+                    updatedate=i.updatedate,
+                    updateid=i.updateid,
                 ),
             )
         return data
